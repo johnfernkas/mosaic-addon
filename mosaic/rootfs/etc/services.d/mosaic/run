@@ -1,0 +1,18 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Mosaic - LED Matrix Display Server
+# ==============================================================================
+
+bashio::log.info "Starting Mosaic..."
+
+# Get config from options
+LOG_LEVEL=$(bashio::config 'log_level')
+export LOG_LEVEL
+
+# Ensure port is set (matches config.json, ingress_port, and ports mapping)
+export MOSAIC_PORT="${MOSAIC_PORT:-8176}"
+
+bashio::log.info "Listening on port ${MOSAIC_PORT}"
+
+exec /usr/bin/mosaic

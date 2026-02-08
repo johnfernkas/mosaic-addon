@@ -1,0 +1,7 @@
+#!/usr/bin/execlineb -S1
+# shellcheck shell=bash
+# ==============================================================================
+# Take down the S6 supervision tree when Mosaic fails
+# ==============================================================================
+
+/run/s6/basedir/bin/halt

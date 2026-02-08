@@ -1,0 +1,30 @@
+{
+  "name": "Mosaic",
+  "version": "0.2.0",
+  "slug": "mosaic",
+  "description": "LED matrix display server for Home Assistant (Tidbyt-compatible)",
+  "url": "https://github.com/johnfernkas/mosaic-addon",
+  "arch": ["aarch64", "amd64", "armv7"],
+  "startup": "application",
+  "boot": "auto",
+  "init": false,
+  "host_network": true,
+  "ingress": true,
+  "ingress_port": 8176,
+  "ports": {
+    "8176/tcp": 8176
+  },
+  "ports_description": {
+    "8176/tcp": "Mosaic API and frame server"
+  },
+  "options": {
+    "log_level": "info"
+  },
+  "schema": {
+    "log_level": "list(trace|debug|info|warning|error|fatal)"
+  },
+  "environment": {
+    "MOSAIC_PORT": "8176"
+  },
+  "map": ["config:rw"]
+}

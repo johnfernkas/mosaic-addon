@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mosaic</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+        h1 { 
+            font-size: 2rem; 
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #0ff, #f0f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .preview {
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        .preview canvas {
+            image-rendering: pixelated;
+            width: 320px;
+            height: 160px;
+        }
+        .status {
+            background: #16213e;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        .status .label { color: #888; }
+        .status .value { color: #0f0; }
+    </style>
+</head>
+<body>
+    <h1>🎨 Mosaic</h1>
+    
+    <div class="preview">
+        <canvas id="display" width="64" height="32"></canvas>
+    </div>
+    
+    <div class="status">
+        <span class="label">Status:</span>
+        <span class="value" id="status">Connecting...</span>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('display');
+        const ctx = canvas.getContext('2d');
+        const statusEl = document.getElementById('status');
+
+        async function fetchFrame() {
+            try {
+                const resp = await fetch('/frame');
+                const buffer = await resp.arrayBuffer();
+                const pixels = new Uint8Array(buffer);
+                
+                const width = parseInt(resp.headers.get('X-Frame-Width') || '64');
+                const height = parseInt(resp.headers.get('X-Frame-Height') || '32');
+                const appName = resp.headers.get('X-App-Name') || 'unknown';
+                
+                const imageData = ctx.createImageData(width, height);
+                for (let i = 0; i < width * height; i++) {
+                    imageData.data[i * 4] = pixels[i * 3];       // R
+                    imageData.data[i * 4 + 1] = pixels[i * 3 + 1]; // G
+                    imageData.data[i * 4 + 2] = pixels[i * 3 + 2]; // B
+                    imageData.data[i * 4 + 3] = 255;               // A
+                }
+                
+                ctx.putImageData(imageData, 0, 0);
+                statusEl.textContent = `Running: ${appName}`;
+            } catch (e) {
+                statusEl.textContent = `Error: ${e.message}`;
+            }
+        }
+
+        fetchFrame();
+        setInterval(fetchFrame, 1000);
+    </script>
+</body>
+</html>

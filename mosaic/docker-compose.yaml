@@ -1,0 +1,22 @@
+# Mosaic - Local Development
+# Usage: docker compose up --build
+
+services:
+  mosaic:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8075:8075"
+    environment:
+      - MOSAIC_PORT=8075
+      - LOG_LEVEL=debug
+    volumes:
+      # Mount apps directory for live editing
+      - ./apps:/app/apps:ro
+      # Persistent data
+      - mosaic-data:/data
+    restart: unless-stopped
+
+volumes:
+  mosaic-data:

@@ -1,0 +1,20 @@
+# Root docker-compose for local development
+# Builds from mosaic/ subdirectory
+
+services:
+  mosaic:
+    build:
+      context: ./mosaic
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8075:8075"
+    environment:
+      - MOSAIC_PORT=8075
+      - LOG_LEVEL=debug
+    volumes:
+      - ./mosaic/apps:/app/apps:ro
+      - mosaic-data:/data
+    restart: unless-stopped
+
+volumes:
+  mosaic-data:
